@@ -1,0 +1,41 @@
+{
+  "Identifier": "taf",
+  "Communication": {
+    "Handler": "kafka-based",
+    "Kafka": {
+      "Broker": "localhost:9092",
+      "TafTopic": "taf"
+    },
+    "TafEndpoint": "taf",
+    "AivEndpoint": "aiv",
+    "MbdEndpoint": "mbd"
+  },
+  "Crypto": {
+    "KeyFolder": "res/cert/",
+    "Enabled": true,
+    "IgnoreVerificationResults": false
+  },
+  "Debug": {
+    "FixedSessionID": "",
+    "FixedSubscriptionID": "",
+    "FixedRequestID": ""
+  },
+  "Evidence": {
+    "AIV": {
+      "CheckInterval": 1000
+    }
+  },
+  "Logging": {
+    "LogLevel": 2,
+    "LogStyle": "PRETTY"
+  },
+  "TLEE": {
+    "UseInternalTLEE": false,
+    "DebuggingMode":   false,
+    "FilePath":        "debug/"
+  },
+  "V2X" : {
+    "NodeTTLsec" : 5,
+    "CheckIntervalSec" : 1
+  }
+}

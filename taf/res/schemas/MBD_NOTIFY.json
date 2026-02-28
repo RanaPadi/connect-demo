@@ -1,0 +1,106 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$wrapper": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/GENERIC_SUBSCRIPTION_NOTIFY/",
+    "$id": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/MBD_NOTIFY/",
+    "title": "MBD_NOTIFY",
+    "type": "object",
+    "properties": {
+      "subscriptionId": {
+        "type": "string",
+        "@origin": "@subscribe#subscriptionId"
+      },
+      "CPM_REPORT": {
+        "type": "object",
+        "properties": {
+          "generationTime": {
+            "type": "number"
+          },
+          "reporterPseudoId": {
+            "type": "number"
+          },
+          "reporterArteryId": {
+            "type": "number"
+          },
+          "version": {
+            "type": "number"
+          },
+          "observationlocation": {
+            "type": "object",
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "x",
+              "y"
+            ]
+          },
+          "content": {
+            "type": "object",
+            "properties": {
+              "observationSet": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "targetId": {
+                      "type": "number"
+                    },
+                    "check": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "targetId",
+                    "check"
+                  ]
+                }
+              },
+              "V2XPduEvidence": {
+                "type": "object",
+                "properties": {
+                  "sourceId": {
+                    "type": "number"
+                  },
+                  "referenceTime": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "sourceId",
+                  "referenceTime"
+                ]
+              }
+            },
+            "required": [
+              "observationSet",
+              "V2XPduEvidence"
+            ]
+          }
+        },
+        "required": [
+          "generationTime",
+          "reporterPseudoId",
+          "reporterArteryId",
+          "version",
+          "observationlocation",
+          "content"
+        ]
+      },
+      "tag" : {
+        "description": "Unique identifier for this message.",
+        "type": "string"
+      }
+    },
+    "required": [
+      "subscriptionId",
+      "CPM_REPORT"
+    ],
+    "$priorMessages": {
+      "subscribe": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/raw/main/TAF_External_Interfaces/Messaging/MBD_SUBSCRIBE_RESPONSE/"
+    }
+  }

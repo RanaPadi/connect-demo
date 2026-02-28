@@ -1,0 +1,107 @@
+{
+  "sender":"taf",
+  "serviceType":"TAS",
+  "messageType":"TAS_INIT_RESPONSE",
+  "responseId":"1234",
+  "message":{
+     "attestationCertificate":"EhJUyBJUyBKVVNUIEEgVEVTVC4gVEhJUyBJUyBKVVNUIEEgVEVTAA2=",
+     "sessionId":"1234-abcd",
+     "success":"Session with trust model template 'VCM@0.0.1' created."
+  }
+}
+
+{
+  "sender": "taf",
+  "serviceType": "TAS",
+  "messageType": "TAS_SUBSCRIBE_RESPONSE",
+  "responseId": "1236",
+  "message" : {
+    "sessionId" : "1234-abcd",
+    "success" : "Subscription created.",
+    "subscriptionId" : "0123f815a-df6b-7b68-9b5b-3116e5d678d3",
+    "attestationCertificate" : "VEhJUyBJUyBKVVNUIEEgVEVTVC4gVEhJUyBJUyBKVVNUIEEgVEVTVC4="
+  }
+}
+
+{
+  "sender": "taf",
+  "serviceType": "TAS",
+  "messageType": "TAS_NOTIFY",
+  "message" : {
+    "sessionId" : "1234-abcd",
+    "subscriptionId" : "0123f815a-df6b-7b68-9b5b-3116e5d678d3",
+    "updates" : [
+      {
+        "id" : "vehicle-78492285eb25",
+        "propositions" : [
+          {
+            "propositionId": "VC1",
+            "actualTrustworthinessLevel" : [
+              {
+                "type" : "SUBJECTIVE_LOGIC_OPINION",
+                "output" : {
+                  "belief" : 0.820,
+                  "disbelief" : 0.180,
+                  "uncertainty" : 0.0,
+                  "baseRate" : 0.5
+                }
+              },
+              {
+                "type" : "PROJECTED_PROBABILITY",
+                "output" : {
+                  "value" : 0.820
+                }
+              }
+            ],
+            "trustDecision" : true
+          },
+	  {
+            "propositionId": "VC2",
+            "actualTrustworthinessLevel" : [
+              {
+                "type" : "SUBJECTIVE_LOGIC_OPINION",
+                "output" : {
+                  "belief" : 0.820,
+                  "disbelief" : 0.180,
+                  "uncertainty" : 0.0,
+                  "baseRate" : 0.5
+                }
+              },
+              {
+                "type" : "PROJECTED_PROBABILITY",
+                "output" : {
+                  "value" : 0.820
+                }
+              }
+            ],
+            "trustDecision" : true
+          }
+        ]
+      }
+    ],
+    "attestationCertificate" : "VEhJUyBJUyBKVVNUIEEgVEVTVC4gVEhJUyBJUyBKVVNUIEEgVEVTVC4="
+  }
+}
+
+{
+  "sender": "taf",
+  "serviceType": "TAS",
+  "messageType": "TAS_UNSUBSCRIBE_RESPONSE",
+  "responseId": "1237",
+  "message" : {
+    "sessionId" : "1234-abcd",
+    "success" : "UNSUBSCRIBED",
+    "attestationCertificate" : "VEhJUyBJUyBKVVNUIEEgVEVTVC4gVEhJUyBJUyBKVVNUIEEgVEVTVC4="
+  }
+}
+
+{
+  "sender":"taf",
+  "serviceType":"TAS",
+  "messageType":"TAS_TEARDOWN_RESPONSE",
+  "responseId":"1238",
+  "message":{
+    "success" : "Session with ID '0123f815a-df6b-7b68-9b5b-3116e5d678d3' successfully terminated.",
+    "attestationCertificate" : "VEhJUyBJUyBKVVNUIEEgVEVTVC4gVEhJUyBJUyBKVVNUIEEgVEVTVC4="
+  }
+}

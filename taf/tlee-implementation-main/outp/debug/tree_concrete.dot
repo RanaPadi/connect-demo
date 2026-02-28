@@ -1,0 +1,19 @@
+digraph G {
+    0 [label="DISCOUNT"];
+    0 -> 1;
+    1 [label="FUSION"];
+    1 -> 2;
+    2 [label="DISCOUNT"];
+    2 -> 3;
+    3 [label="V_RE -> V_YE"];
+    2 -> 4;
+    4 [label="V_YE -> CAM1"];
+    1 -> 5;
+    5 [label="DISCOUNT"];
+    5 -> 6;
+    6 [label="V_RE -> V_TEST"];
+    5 -> 7;
+    7 [label="V_TEST -> CAM1"];
+    0 -> 8;
+    8 [label="CAM1 -> CAM2"];
+}

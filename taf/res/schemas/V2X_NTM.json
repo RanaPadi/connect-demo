@@ -1,0 +1,70 @@
+{
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$wrapper": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/GENERIC_ONE_WAY/",
+    "$id": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/V2X_NTM/",
+    "$ref": "#/definitions/Ntm",
+    "definitions": {
+        "Ntm": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "v2xSourceSet": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/V2XSourceSet"
+                    }
+                },
+                "tag" : {
+                    "description": "Unique identifier for this message.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "v2xSourceSet"
+            ],
+            "title": "Ntm"
+        },
+        "V2XSourceSet": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "v2xSourceId": {
+                    "type": "integer"
+                },
+                "opinion": {
+                    "$ref": "#/definitions/Opinion"
+                }
+            },
+            "required": [
+                "opinion",
+                "v2xSourceId"
+            ],
+            "title": "V2XSourceSet"
+        },
+        "Opinion": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "belief": {
+                    "type": "number"
+                },
+                "disbelief": {
+                    "type": "number"
+                },
+                "uncertainty": {
+                    "type": "number"
+                },
+                "baseRate": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "baseRate",
+                "belief",
+                "disbelief",
+                "uncertainty"
+            ],
+            "title": "Opinion"
+        }
+    }
+}

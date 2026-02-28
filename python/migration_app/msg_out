@@ -1,0 +1,54 @@
+{
+  "sender": "application.ccam",
+  "serviceType": "TAS",
+  "messageType": "TAS_INIT_REQUEST",
+  "responseTopic": "application.ccam",
+  "requestId": "1234",
+  "message" : {
+    "trustModelTemplate": "VCM@0.0.1"
+  }
+}
+
+{
+  "sender": "application.ccam",
+  "serviceType": "TAS",
+  "messageType": "TAS_SUBSCRIBE_REQUEST",
+  "responseTopic": "application.ccam",
+  "subscriberTopic": "application.ccam",
+  "requestId": "1236",
+  "message" : {
+   "sessionId" : "1234-abcd",
+   "subscribe": {
+     "filter" : [
+       "VC1",
+       "VC2"
+     ]
+    },
+    "trigger" : "ACTUAL_TRUSTWORTHINESS_LEVEL"
+   }
+}
+
+{
+  "sender": "application.ccam",
+  "serviceType": "TAS",
+  "messageType": "TAS_UNSUBSCRIBE_REQUEST",
+  "responseTopic": "application.ccam",
+  "subscriberTopic": "application.ccam",
+  "requestId": "1237",
+  "message" : {
+    "sessionId" : "1234-abcd",
+    "subscriptionId" : "0123f815a-df6b-7b68-9b5b-3116e5d678d3"
+  }
+}
+
+{
+  "sender": "application.ccam",
+  "serviceType": "TAS",
+  "messageType": "TAS_TEARDOWN_REQUEST",
+  "responseTopic": "application.ccam",
+  "subscriberTopic": "application.ccam",
+  "requestId": "1238",
+  "message" : {
+    "sessionId": "1234-abcd"
+  }
+}

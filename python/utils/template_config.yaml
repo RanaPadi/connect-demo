@@ -1,0 +1,57 @@
+kafka:
+  local_server: '192.168.10.101:9092'
+  remote_server: '51.159.124.68:49953'
+  cc_topic: 'control_commands_data'
+  ego_topic: 'ego_data'
+  leader_position_topic : 'leader_position_data'
+  leader_gap_topic: 'leader_gap_data'
+  switch_topic: 'switch_data'
+  migrationApp_topic: 'application.ccam'
+  taf_topic: 'taf'
+  aiv_topic: 'aiv'
+  ACCESS_CONTROL_VC1_TOPIC: 'ACCESS_CONTROL_VC1'
+  ACCESS_CONTROL_VC2_TOPIC: 'ACCESS_CONTROL_VC2'
+  APPLICATION_ISOLATION_VC1_TOPIC: 'APPLICATION_ISOLATION_VC1'
+  APPLICATION_ISOLATION_VC2_TOPIC: 'APPLICATION_ISOLATION_VC2'
+  CONTROL_FLOW_INTEGRITY_VC1_TOPIC: 'CONTROL_FLOW_INTEGRITY_VC1'
+  CONTROL_FLOW_INTEGRITY_VC2_TOPIC: 'CONTROL_FLOW_INTEGRITY_VC2'
+  CONTROL_FLOW_INTEGRITY_VERIFICATION_VC1_TOPIC: 'CONTROL_FLOW_INTEGRITY_VERIFICATION_VC1'
+  CONTROL_FLOW_INTEGRITY_VERIFICATION_VC2_TOPIC: 'CONTROL_FLOW_INTEGRITY_VERIFICATION_VC2'
+  SECURE_BOOT_VC1_TOPIC: 'SECURE_BOOT_VC1'
+  SECURE_BOOT_VC2_TOPIC: 'SECURE_BOOT_VC2'
+  SECURE_OTA_VC1_TOPIC: 'SECURE_OTA_VC1'
+  SECURE_OTA_VC2_TOPIC: 'SECURE_OTA_VC2'
+
+origin: 'VC2'
+destination: 'VC1'
+
+
+cacc:
+  desired_speed: 10.0  # Desired speed in meters per second
+  speed_control_gain: 0.4  # Gain for maintaining desired speed
+  gap_control_gain_speed: 0.25  # Gain for gap control based on speed deviation
+  gap_control_gain_space: 0.45  # Gain for gap control based on space deviation
+  desired_time_gap: 1.5  # Desired time gap in seconds
+  gap_closing_gain_speed: 1.6  # Gain for gap closing based on speed deviation
+  gap_closing_gain_space: 0.01  # Gain for gap closing based on space deviation
+
+simulation:
+  timeout: 100
+
+env_variables:
+  CONNECT_DEMO_PATH: "$PWD"
+  log_path: "$PWD/logs"
+  migration_script: "$PWD/bash_scripts/migration.sh"
+  TAF_PATH: "$PWD/TAF"
+  RTL_ATL_Main: "$PWD/TAF/RTL_ATL_Main.csv"
+  vehicle_computer_username: "$USER_NAME"
+  vehicle_computer_password: "$USER_PASSWORD"
+  main_computer_ip: "192.168.10.101"
+  vehicle_computer_1_ip: "192.168.10.102"
+  vehicle_computer_2_ip: "192.168.10.103"
+  KAFKA_PATH: "/opt/kafka"
+  python_venv_path: "$PWD/kafka_python_venv"
+  python_requirements_file: "$PWD/requirements.txt"
+  python_acc_application: "$PWD/python/cc/cc.py"
+  blink_tool_path: "$PWD/bash_scripts/blink1-tool"
+  python_migration_script: "$PWD/python/migration_app/migration_app.py"

@@ -1,0 +1,235 @@
+# Trust Assessment Framework Prototype
+
+## Release v1.0.0-rc1 (2025-07-05)
+
+* first release candidate after feature freeze
+* updates to schemas of `TAS_NOTIFY` and `TAS_TA_RESPONSE` for encoding internal state version numbers
+* minor internal fixes
+
+
+## Release v0.5.0 (2025-06-27)
+
+* modified behavior of the TAF to provide more details on the input messages included in the trust assessment process of a trust model instance
+   * Evidence messages can provide an optional `tag` that represents an arbitrary message identifier (e.g., UUID, prefixed or unique timestamp/sequence number)
+   * In case the evidence message triggering an ATL change has been labeled with a `tag`, this `tag`is included in the ATL information; otherwise there is no tag.
+   * A `tag` in a trust assessment of the TAF indicates that the tagged message and all prior messages relevant for this trust model instance have been processed.
+* changes to the JSON Schemas of evidence-related messages to contain an optional `tag` as a message identifier; affecting:
+	* `AIV_RESPONSE`
+	* `AIV_NOTIFY`
+	* `MBD_NOTIFY`
+	* `TCH_NOTIFY`
+	* `V2X_CPM`
+	* `V2X_NTM`
+* changes to the trust assessment responses of the TAF to include the internal `version` of the trust model instance and (optionally) a `tag` identifying the latest incoming evidence message included in the actual trust levels; affecting the following JSON Schemas:
+	* `TAS_TA_RESPONSE`
+	* `TAS_NOTIFY`
+
+
+## Release v0.4.5 (2025-06-24)
+
+* modified behavior of non-cached `TAS_TA_REQUEST`s: TAF now waits an arbitrary amount of time until the response is available instead of using an internal timeout of 80 msec and to rely cached data otherwise
+* optimization of TLEE call: unmodified trust model will skip call
+* improved shutdown of Kafka consumer on TAF shutdown
+* internal code clean-ups
+
+
+## Release v0.4.4 (2025-06-12)
+
+* updated trust opinion handling in `NTM_STANDALONE@0.0.1` in case TCH/MBD opinions are missing
+
+
+## Release v0.4.3 (2025-06-09)
+
+* changed TLEE usage in TAM workers to a 1:1 mapping, meaning that each TAM worker spawns its own TLEE instance
+* fixed a concurrency bug in the node listener for spawning dynamic trust models based on TCH or V2X_CPM messages
+* improved liveness under heavy load by prioritizing updates from the workers over external messages
+* some cleanup of the internal code base
+
+
+## Release v0.4.2 (2025-06-05)
+
+* made the handling of TCH robust when using different formats of identifiers
+
+
+## Release v0.4.1 (2025-05-23)
+ 
+* fixed a bug in the IMA trust models in which MBD evidence was associated with the wrong trust model instance
+* updated trust models
+	* `IMA_STANDALONE@0.0.1`
+	* `IMA_STANDALONE@0.0.2`
+	* `IMA_FEDERATED@0.0.1`
+
+
+## Release v0.4.0 (2025-05-21)
+
+* initial release of federation-enabled TAF
+* added support for the following message types
+	 * `V2X_NTM`
+* added support for NTM as evidence provider
+* added trust models
+	 * `NTM_STANDALONE@0.0.1`: MEC-side trust model for IMA use case
+       * dynamically triggered based on TCH messages
+       * trust sources: TCH, MBD
+     * `IMA_FEDERATED@0.0.1`: Vehicle-side trust model for IMA use case
+       * dynamically triggered based on CPM messages
+       * trust sources: NTM, MBD
+
+
+## Release v0.3.4 (2025-04-24)
+ 
+* included a new version of the TLEE (`8d587872e0d895c70deded6d498599cf7c7321cc`)
+	* removed internal consistency checks that caused the TLEE to abort calculations due to floating point rounding errors
+
+
+## Release v0.3.3 (2025-04-11)
+ 
+* included a new version of the TLEE (`27c5757c3606c962be03ec7e062d824590db7262`)
+
+
+## Release v0.3.2 (2025-03-17)
+
+* fixed a bug in `IMA_STANDALONE@0.0.2` causing the exponentially weighted moving average calculation to be ignored
+
+
+## Release v0.3.1 (2025-02-14)
+
+* added trust models
+	* `IMA_STANDALONE@0.0.2`: a new version of the IMA standalone trust model that supports an optional `MBD_EWMA_ALPHA` parameter in `TAS_INIT_REQUEST`. If set (0<value<=1, default = 1), this is the weighting parameter to be used for exponentially weighted moving average on the MBD atomic trust opinions. 
+
+
+## Release v0.3.0 (2025-02-13)
+
+* extended support for dynamically spawned trust model instances
+	* `VEHICLE_TRIGGERED_TRUST_MODEL`
+		* trigger based on `SourceID` in a V2X_CPM messages
+		* trust model template callback: `OnNewVehicle()` 
+    * `TRUSTEE_TRIGGERED_TRUST_MODEL`
+        * trigger based on TCH_NOTIFY messages in which the trusteeID has the format `vehicle_<numerical_id>`
+        * trust model template callback: `OnNewTrustee()`
+* added trust models
+	* `SMTD@0.0.1`: Slow-Moving Traffic Detection Trust Model
+	* `TO@0.0.1`: Task Offloading Trust Model
+
+
+## Release v0.2.8 (2024-12-10)
+
+* added experimental web UI for exploring TAF-internal states
+	* overview of sessions
+	* overview of trust model instances
+	* detailed view of trust model instances and their history
+* added support for the TAF to handle errors returned by the TLEE
+
+
+## Release v0.2.7 (2024-11-22)
+
+* restructured the folders for trust models to allow for multiple templates of the same group
+* added automatic signing hashes for trust model templates 
+* added support for the following message types
+	* `TAS_TMT_DISCOVER`
+	* `TAS_TMT_OFFER`
+
+
+## Release v0.2.6 (2024-11-04)
+
+* added support for queries based on the  Trust Assessment Query Interface (TAQI) which allows to query for instantiated trust models and their ATLs
+* added support for the following message types
+	* `TAQI_QUERY`
+	* `TAQI_RESULT`
+
+
+## Release v0.2.5 (2024-10-30)
+
+* included a new version of the TLEE (`887019e9050e9a50f8746526452d5089fd9a2da1`)
+  * configurable debugging behavior and debugging output
+  * increased robustness and improved error handling 
+  * unified logging with TAF
+* fixed bug in which no TAS_NOTIFY is sent after spawning a new trust model instance
+* changed behavior of parsing TCH_NOTIFY messages to allow for different formats allowed in the message specification
+* fixed bug in `IMA_STANDALONE@0.0.1` trust model that caused incorrect trust source quantifications for TCH 
+
+
+## Release v0.2.4 (2024-10-29)
+
+* fixed a bug when handling atomic trust opinion updates in the IMA use case when the TCH NOTIFY message also includes component information
+
+
+## Release v0.2.3 (2024-10-10)
+
+* fixed handling of atomic trust opinion updates
+* improved support for concurrent trust models with identical evidence types coming from different trust sources
+
+
+## Release v0.2.2 (2024-10-09)
+
+* fixed behavior of TAS_NOTIFY according to the TAS subscription specification
+  * Notifications now always include the full set of propositions (instead of only the changed propositions) in case the subscription trigger fires for a trust model instance after it has been modified. 
+
+
+## Release v0.2.1 (2024-10-01)
+
+* reworked support for handling different trust sources
+	* AIV: one separate subscription for each session
+	* MBD: single subscription for all sessions
+	* TCH: subscription-less
+* upgraded internal TLEE to support IMA_STANDALONE trust models for debugging
+
+
+## Release v0.2.0 (2024-09-30)
+
+* added support for dynamic trust models
+  * added support for dynamically spawned trust model instances
+  * added support for trust models with dynamically changing topologies
+* updated internal TMT/TMI API
+* added CPM-based dynamic V2X observer as event source
+* added support for TCH as evidence provider
+* added support for MBD as evidence provider
+* added support for the following message types
+	* `MBD_SUBSCRIBE_REQUEST`
+	* `MBD_SUBSCRIBE_RESPONSE`
+	* `MBD_UNSUBSCRIBE_REQUEST`
+	* `MBD_UNSUBSCRIBE_RESPONSE`
+	* `MBD_NOTIFY`
+	* `TCH_NOTIFY`
+	* `V2X_CPM`
+* added trust models
+  * `IMA_STANDALONE@0.0.1`: Intersection Movement Assist (Standalone Variant) Trust Model
+* version of TLEE included: `aa0aa59b4b4362e54430f437607ed5ac7a96a54e`
+* version of crypto library included: v1.2
+
+
+## Release v0.1.1 (2024-09-10)
+ 
+ * fixed integration of the `VCM@0.0.1` tust model
+
+
+## Release v0.1.0 (2024-08-09)
+ 
+ * initial CONNECT-internal release of the standalone TAF prototype
+ * added support for static trust models
+ * added support for AIV as evidence provider
+ * added support for the following message types
+	 * `TAS_INIT_REQUEST`
+	 * `TAS_INIT_RESPONSE`
+	 * `TAS_TEARDOWN_REQUEST`
+	 * `TAS_TEARDOWN_RESPONSE`
+	 * `TAS_TA_REQUEST ("TAR")`
+	 * `TAS_TA_RESPONSE`
+	 * `TAS_SUBSCRIBE_REQUEST`
+	 * `TAS_SUBSCRIBE_RESPONSE`
+	 * `TAS_UNSUBSCRIBE_REQUEST`
+	 * `TAS_UNSUBSCRIBE_RESPONSE`
+	 * `TAS_NOTIFY`
+	 * `AIV_REQUEST`
+	 * `AIV_RESPONSE`
+	 * `AIV_SUBSCRIBE_REQUEST`
+	 * `AIV_SUBSCRIBE_RESPONSE`
+	 * `AIV_UNSUBSCRIBE_REQUEST`
+	 * `AIV_UNSUBSCRIBE_RESPONSE`
+	 * `AIV_NOTIFY`
+ * added trust models 
+   * `BRUSSELS@0.0.1`: backport of the Brussels demo
+   * `VCM@0.0.1`: vehicle computer migration (DENSO use case)
+ * added trust decision engine logic
+   * projected probability
+ * version of TLEE included: aa0aa59b4b4362e54430f437607ed5ac7a96a54e
+ * version of crypto library included: v1.2

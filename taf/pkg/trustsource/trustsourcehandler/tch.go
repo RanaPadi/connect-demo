@@ -1,0 +1,118 @@
+package trustsourcehandler
+
+import (
+	"fmt"
+	"github.com/vs-uulm/go-taf/internal/flow/completionhandler"
+	"github.com/vs-uulm/go-taf/pkg/command"
+	"github.com/vs-uulm/go-taf/pkg/core"
+	tchmsg "github.com/vs-uulm/go-taf/pkg/message/tch"
+	"github.com/vs-uulm/go-taf/pkg/trustmodel/session"
+	"github.com/vs-uulm/go-taf/pkg/trustmodel/trustmodelupdate"
+	"log/slog"
+	"strconv"
+	"strings"
+)
+
+type TchHandler struct {
+	sessionTsqs                map[string][]core.TrustSourceQuantifier
+	latestSubscriptionEvidence map[string]map[core.EvidenceType]interface{}
+	tam                        TAMAccess
+	logger                     *slog.Logger
+}
+
+func CreateTchHandler(tam TAMAccess, logger *slog.Logger) *TchHandler {
+	return &TchHandler{
+		sessionTsqs:                make(map[string][]core.TrustSourceQuantifier),
+		latestSubscriptionEvidence: make(map[string]map[core.EvidenceType]interface{}),
+		logger:                     logger,
+		tam:                        tam,
+	}
+}
+
+func (h *TchHandler) Initialize() {
+	return
+}
+
+func (h *TchHandler) AddSession(sess session.Session, handler *completionhandler.CompletionHandler) {
+	h.sessionTsqs[sess.ID()] = sess.TrustSourceQuantifiers()
+}
+
+func (h *TchHandler) RemoveSession(sess session.Session, handler *completionhandler.CompletionHandler) {
+	delete(h.sessionTsqs, sess.ID())
+}
+
+func (h *TchHandler) TrustSourceType() core.TrustSource {
+	return core.TCH
+}
+
+func (h *TchHandler) RegisteredSessions() []string {
+	sessions := make([]string, len(h.sessionTsqs))
+	i := 0
+	for k := range h.sessionTsqs {
+		sessions[i] = k
+		i++
+	}
+	return sessions
+}
+
+func (h *TchHandler) HandleNotify(cmd command.HandleNotify[tchmsg.TchNotify]) {
+	//Extract raw evidence from the message and store it into latestEvidence
+	trusteeID := cmd.Notify.TchReport.TrusteeID
+	updatedTrustees := make(map[string]bool)                              //flag trustees with changes
+	updatedEvidence := make(map[string]map[core.EvidenceType]interface{}) //collect changes
+
+	for _, trusteeReport := range cmd.Notify.TchReport.TrusteeReports {
+		componentID := trusteeReport.ComponentID
+		id := trusteeID
+		if componentID != nil {
+			id = fmt.Sprintf("%s~%s", trusteeID, *componentID)
+		}
+		_, idExists := updatedEvidence[id]
+
+		if !idExists {
+			updatedEvidence[id] = make(map[core.EvidenceType]interface{})
+		}
+
+		for _, attestationReport := range trusteeReport.AttestationReport {
+			evidenceType := core.EvidenceTypeBySourceAndName(core.TCH, attestationReport.Claim)
+			value := int(attestationReport.Appraisal)
+			updatedTrustees[id] = true
+			updatedEvidence[id][evidenceType] = value
+		}
+	}
+	for id, evidence := range updatedEvidence {
+		h.latestSubscriptionEvidence[id] = evidence
+	}
+
+	//Iterate over all sessions register for TCH, call quantifiers and relay updates
+	for sessionId, tsqs := range h.sessionTsqs {
+		sess := h.tam.Sessions()[sessionId]
+		//loop through all updated trustees and find fitting quantifiers; if successful, apply quantifier and add ATO update
+		updates := make([]core.Update, 0)
+		for trustee := range updatedTrustees {
+			for _, tsq := range tsqs {
+				if tsq.TrustSource != core.TCH {
+					continue
+				} else if tsq.Trustor == "MEC" && tsq.Trustee == "vehicle_*" && strings.HasPrefix(trustee, "vehicle_") {
+					ato := tsq.Quantifier(h.latestSubscriptionEvidence[trustee])
+					h.logger.Debug("Opinion for "+trustee, "SL", ato.String(), "Input", fmt.Sprintf("%v", h.latestSubscriptionEvidence[trustee]))
+					updates = append(updates, trustmodelupdate.CreateAtomicTrustOpinionUpdate(ato, "MEC", trustee, core.TCH))
+				} else if tsq.Trustor == "V_ego" && tsq.Trustee == "V_*" && strings.HasPrefix(trustee, "vehicle_") {
+					ato := tsq.Quantifier(h.latestSubscriptionEvidence[trustee])
+					h.logger.Debug("Opinion for "+trustee, "SL", ato.String(), "Input", fmt.Sprintf("%v", h.latestSubscriptionEvidence[trustee]))
+					updates = append(updates, trustmodelupdate.CreateAtomicTrustOpinionUpdate(ato, "V_ego", trustee, core.TCH))
+				} else if _, err := strconv.Atoi(trustee); err == nil && tsq.Trustor == "V_ego" && tsq.Trustee == "V_*" {
+					ato := tsq.Quantifier(h.latestSubscriptionEvidence[trustee])
+					h.logger.Debug("Opinion for "+trustee, "SL", ato.String(), "Input", fmt.Sprintf("%v", h.latestSubscriptionEvidence[trustee]))
+					updates = append(updates, trustmodelupdate.CreateAtomicTrustOpinionUpdate(ato, "V_ego", "V_"+trustee, core.TCH))
+				}
+			}
+		}
+		if len(updates) > 0 {
+			for tmiID, fullTmiID := range sess.TrustModelInstances() {
+				tmiUpdateCmd := command.CreateHandleTMIUpdate(fullTmiID, cmd.Notify.Tag, updates...)
+				h.tam.DispatchToWorker(sess, tmiID, tmiUpdateCmd)
+			}
+		}
+	}
+}

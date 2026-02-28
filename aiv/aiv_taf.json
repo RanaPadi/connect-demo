@@ -1,0 +1,17 @@
+{
+    "VC1":{"requestedClaims": {
+		"SECURE_BOOT":[1,1,0,1,0,0, 1],
+		"APPLICATION_ISOLATION":[1,1,0,1,0,0, 1],
+		"CONTROL_FLOW_INTEGRITY":[1,1,0,1,0,0, 1],
+		"ACCESS_CONTROL":[1,1,0,1,0,0, 1],
+		"SECURE_OTA":[1,1,0,1,0,0, 1]
+    }},
+	"VC2":{"requestedClaims": {
+		"SECURE_BOOT":[-1,1,0,1,0,0, 1],
+		"APPLICATION_ISOLATION":[0,1,0,1,0,0, 1],
+		"CONTROL_FLOW_INTEGRITY":[0,1,0,1,0,0, 1],
+		"ACCESS_CONTROL":[1,1,0,1,0,0, 1],
+		"SECURE_OTA":[1,1,0,1,0,0, 1]
+    }}
+
+}

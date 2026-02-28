@@ -1,0 +1,85 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$wrapper": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/GENERIC_ONE_WAY/",
+    "$id": "https://connect.informatik.uni-ulm.de/coordination/taf-implementation/-/tree/main/TAF_External_Interfaces/Messaging/TCH_NOTIFY/",
+    "title": "TCH_NOTIFY",
+    "type": "object",
+    "properties": {
+      "tchReport": {
+        "type": "object",
+        "properties": {
+          "trusteeReports": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "attestationReport": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "appraisal": {
+                        "description": "Verification status based on the attestation mechanisms. Possible values: \n Value 0: The verifier (i.e., AIV) asserts that the attestation process has failed for a specific claim.\n Value 1: The verifier (i.e., AIV) affirms that a specific claim has been successfully verified. \n Value -1: The verifier (i.e., AIV) hasn't engaged in an attestation process for this specific claim (e.g., because the attestation process is not supported or the prover ECU is not responding). Note that this could be treated equivalently by TAF as no claim being made.\nValue -2: The verifier (i.e., AIV) initiated an attestation process but didn't receive the expected evidence from the prover entity (e.g., request timeout, malformed response).",
+                        "type": "integer",
+                        "enum": [
+                          -2,
+                          -1,
+                          0,
+                          1
+                        ]
+                      },
+                      "claim": {
+                        "type": "string"
+                      },
+                      "timestamp": {
+                        "type": "string"
+                      }
+                    },
+                    "required": ["appraisal", "claim", "timestamp"]
+                  }
+                },
+                "componentID": {
+                  "description": "This identifier corresponds to the exact component associated with the reported claims in the attestation report. If this field doesn't exist, then the attributes refer to the entire trustee entity (e.g., ego-vehicle).",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "attestationReport"
+              ]
+            }
+          },
+          "trusteeID": {
+            "description": "This identifier corresponds to the pseudonym associated with an ego vehicle.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trusteeReports",
+          "trusteeID"
+        ]
+      },
+      "evidence": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "signatureAlgorithmType": {
+            "type": "string"
+          },
+          "signature": {
+            "type": "string"
+          },
+          "keyRef": {
+            "type": "string"
+          }
+        },
+        "required": ["timestamp", "signatureAlgorithmType", "signature", "keyRef"]
+      },
+      "tag" : {
+        "description": "Unique identifier for this message.",
+        "type": "string"
+      }
+    },
+    "required": ["tchReport", "evidence"]
+  }
